@@ -1,0 +1,26 @@
+#Прописываем репозиторий для скачивания vagrant box ubuntu 20
+ENV['VAGRANT_SERVER_URL'] = 'http://vagrant.elab.pro'
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/focal64"  # Используем Ubuntu 20
+  config.vm.hostname = "mdadm"      # Имя виртуальной машины
+  config.vm.define "MDADM"        # Имя бокса в вагранте 
+
+  # Настройки ресурсов
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "mdadm"  # Имя бокса в VirtualBox
+    vb.memory = 4096   # 4 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+# Добавляем 5 дисков для 5 рейда
+  config.vm.disk :disk, size: "1GB", name: "disk1"
+  config.vm.disk :disk, size: "1GB", name: "disk2"
+  config.vm.disk :disk, size: "1GB", name: "disk3"
+  config.vm.disk :disk, size: "1GB", name: "disk4"
+  config.vm.disk :disk, size: "1GB", name: "disk5"
+
+# Скрипт для сборки рейда
+   config.vm.provision "shell", path: "raid.sh"
+
+end

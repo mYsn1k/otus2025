@@ -1,0 +1,23 @@
+#Прописываем репозиторий для скачивания vagrant box ubuntu 20
+ENV['VAGRANT_SERVER_URL'] = 'http://vagrant.elab.pro'
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/focal64"  # Используем Ubuntu 20
+  config.vm.hostname = "nginx"      # Имя виртуальной машины
+  config.vm.define "NGINX"        # Имя бокса в вагранте 
+
+  # Настройки ресурсов
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "nginx"  # Имя бокса в VirtualBox
+    vb.memory = 8192   # 8 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+  # Проброс порта c 80 на 8080 nginx
+  config.vm.network "forwarded_port", guest: 8080, host: 80
+
+  # Настройка Ansible
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yml"
+  end
+end

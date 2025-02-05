@@ -1,0 +1,47 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    nginx_port: 8080  # Переменная для порта nginx
+    localhost: "127.0.0.1:80"  # Переменная для localhost для вывода в index.html в браузере
+
+  tasks:
+    - name: Install Nginx #Устанавлвиаем пакет через apt
+      apt:
+        update_cache: yes #Обновляеи список из репозитория, иначе падает в ошибку
+        name: nginx
+        state: present
+      notify:
+        - Enable Nginx
+        - Start Nginx
+
+    - name: Configure Nginx #Прописываем конфиг из темплейта
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/sites-available/default
+      notify:
+        - Restart Nginx
+
+    - name: Create custom index.html #Прописываем кастомную страницу для браузера
+      template:
+        src: index.html.j2
+        dest: /var/www/html/index.html
+      notify:
+        - Restart Nginx
+
+  handlers: #Задаем триггеры
+    - name: Enable Nginx
+      systemd:
+        name: nginx
+        enabled: yes
+
+    - name: Start Nginx
+      systemd:
+        name: nginx
+        state: started
+
+    - name: Restart Nginx
+      systemd:
+        name: nginx
+        state: restarted
+

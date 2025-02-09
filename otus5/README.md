@@ -13,4 +13,5 @@
    переносим на них файлы из var и home, удаляем старые каталоги, переделываем точки монтирования, правим fstab, првоеряем возможность snapshots
 
     ![Screenshot from 2025-02-09 22-11-42](https://github.com/user-attachments/assets/449b3326-ef1b-4818-9d12-45c80862047d)
-![Screenshot from 2025-02-09 17-21-46](https://github.com/user-attachments/assets/58bac079-b84c-473f-bd36-ce70a52a82d4)
+   
+![Screenshot from 2025-02-09 20-59-28](https://github.com/user-attachments/assets/bd4b3715-c934-40b8-b39a-6e3d377b16bd)

@@ -22,10 +22,10 @@ Vagrant.configure("2") do |config|
   config.vm.disk :disk, size: "1GB", name: "disk6"
   
 # Уменьшить том под / до 8G
-#  config.vm.provision "shell", path: "root_move.sh"
-#  config.vm.provision "shell", reboot: true
-#  config.vm.provision "shell", path: "root_shrink.sh"
-#  config.vm.provision "shell", reboot: true
+  config.vm.provision "shell", path: "root_move.sh"
+  config.vm.provision "shell", reboot: true
+  config.vm.provision "shell", path: "root_shrink.sh"
+  config.vm.provision "shell", reboot: true
 
 # Создать mirror под /var и перенести на новый lvm
 

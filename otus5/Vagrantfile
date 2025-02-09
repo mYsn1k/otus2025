@@ -1,8 +1,8 @@
-#Прописываем репозиторий для скачивания vagrant box ubuntu 20
+#Прописываем репозиторий для скачивания vagrant box ubuntu 24
 ENV['VAGRANT_SERVER_URL'] = 'http://vagrant.elab.pro'
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "bento/ubuntu-24.04"  # Используем Ubuntu 20
+  config.vm.box = "bento/ubuntu-24.04"  # Используем Bento ubuntu 24, т.к. в ней директория рут на LVM
   config.vm.hostname = "lvm"      # Имя виртуальной машины
   config.vm.define "LVM"        # Имя бокса в вагранте 
 

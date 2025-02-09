@@ -1,0 +1,47 @@
+#Прописываем репозиторий для скачивания vagrant box ubuntu 20
+ENV['VAGRANT_SERVER_URL'] = 'http://vagrant.elab.pro'
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"  # Используем Ubuntu 20
+  config.vm.hostname = "lvm"      # Имя виртуальной машины
+  config.vm.define "LVM"        # Имя бокса в вагранте 
+
+  # Настройки ресурсов
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "lvm"  # Имя бокса в VirtualBox
+    vb.memory = 4096   # 4 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+# Добавляем 5 дисков для 5 рейда
+  config.vm.disk :disk, size: "5GB", name: "disk1"
+  config.vm.disk :disk, size: "1GB", name: "disk2"
+  config.vm.disk :disk, size: "1GB", name: "disk3"
+  config.vm.disk :disk, size: "1GB", name: "disk4"
+  config.vm.disk :disk, size: "1GB", name: "disk5"
+  config.vm.disk :disk, size: "1GB", name: "disk6"
+  
+# Уменьшить том под / до 8G
+#  config.vm.provision "shell", path: "root_move.sh"
+#  config.vm.provision "shell", reboot: true
+#  config.vm.provision "shell", path: "root_shrink.sh"
+#  config.vm.provision "shell", reboot: true
+
+# Создать mirror под /var и перенести на новый lvm
+
+  config.vm.provision "shell", path: "var_mirror.sh"
+  config.vm.provision "shell", reboot: true
+
+# Создаем lvm под /home
+
+  config.vm.provision "shell", path: "home.sh"
+  config.vm.provision "shell", reboot: true
+ 
+# Создаем snapshot
+
+  config.vm.provision "shell", path: "snap.sh"
+
+end
+
+
+

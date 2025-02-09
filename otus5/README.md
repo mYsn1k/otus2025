@@ -12,4 +12,5 @@
 3. Создаем зеркальный LVM для var и обычный для home. У LVM home используем не 100% места для возможности создания снапшотов. Монтируем созданные LVM,
    переносим на них файлы из var и home, удаляем старые каталоги, переделываем точки монтирования, правим fstab, првоеряем возможность snapshots
 
-   ![Screenshot from 2025-02-09 22-11-42](https://github.com/user-attachments/assets/449b3326-ef1b-4818-9d12-45c80862047d)
+    ![Screenshot from 2025-02-09 22-11-42](https://github.com/user-attachments/assets/449b3326-ef1b-4818-9d12-45c80862047d)
+![Screenshot from 2025-02-09 17-21-46](https://github.com/user-attachments/assets/58bac079-b84c-473f-bd36-ce70a52a82d4)

@@ -1,0 +1,77 @@
+Vagrant.configure("2") do |config|
+  # Настройка сервера NFS
+  config.vm.define "nfs_server" do |server|
+    server.vm.box = "ubuntu/focal64"  # Используем Ubuntu 20.04 LTS
+    server.vm.hostname = "nfs-server"
+    server.vm.network "private_network", ip: "192.168.56.100", virtualbox__intnet: "net1"  # IP сервера
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 4096   # 4 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+    # Настраиваем NFS server
+    server.vm.provision "shell", preserve_order: true, inline: <<-SHELL
+      # Установка NFS сервера
+      apt-get update
+      apt-get install -y nfs-kernel-server
+
+      # Создание общей папки
+      mkdir -p /srv/nfs/upload
+      chmod 777 /srv/nfs/upload
+
+      # Настройка экспорта папки
+      echo "/srv/nfs 192.168.56.200/32(rw,sync,no_root_squash,no_subtree_check)" > /etc/exports
+      exportfs -r
+
+      # Перезапуск NFS сервера
+      systemctl restart nfs-server
+
+      # проверяем настройки экспорта
+      exportfs -s
+      # Скачиваем тестовый файл в общую папку
+      wget 'https://raw.githubusercontent.com/octocat/Hello-World/master/README' -O /srv/nfs/upload/test.txt
+    SHELL
+  end
+
+  # Настройка клиента
+  config.vm.define "nfs_client" do |client|
+    client.vm.box = "ubuntu/focal64"  # Используем Ubuntu 20.04 LTS
+    client.vm.hostname = "nfs-client"
+    client.vm.network "private_network", ip: "192.168.56.200", virtualbox__intnet: "net1"  # IP клиента
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 4096   # 4 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+    client.vm.provision "shell", preserve_order: true, inline: <<-SHELL
+      # Установка NFS клиента
+      apt-get update
+      apt-get install -y nfs-common
+
+      # Создание точки монтирования
+      mkdir -p /mnt/nfs
+
+      # Настройка автоматического монтирования через fstab
+      echo "192.168.56.100:/srv/nfs /mnt/nfs nfs vers=3,noauto,x-systemd.automount 0 0" >> /etc/fstab
+
+      # Монтирование NFS
+      systemctl daemon-reload 
+      systemctl restart remote-fs.target 
+      
+      # Првоеряем, что общая папка примонтировалась и файл доступен
+      cat /mnt/nfs/upload/test.txt
+SHELL
+
+
+#Перезагружаем клиент, проверяем доступность файла еще раз
+     client.vm.provision "reboot", preserve_order: true, type: "shell", reboot: true
+
+     client.vm.provision "script", after: :all, type: "shell", path: "nfsc_script.sh"   
+
+end
+
+
+
+end

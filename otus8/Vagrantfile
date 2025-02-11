@@ -1,0 +1,46 @@
+#Прописываем репозиторий для скачивания vagrant box ubuntu 20
+ENV['VAGRANT_SERVER_URL'] = 'http://vagrant.elab.pro'
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"  # Используем Centos 7
+  config.vm.hostname = "repo"      # Имя виртуальной машины
+
+  # Настройки ресурсов
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 8192   # 8 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+  # Настройка сети 
+  config.vm.network "public_network", ip: "10.11.12.100"
+
+  config.vm.provision "OS update", type: "shell", path: "os_update.sh"
+# Provisioning: выполнение скрипта для настройки
+  config.vm.provision "shell", inline: <<-SHELL
+    # Обновление системы
+
+    # Установка необходимых пакетов
+    yum install -y  redhat-lsb-core wget rpmdevtoools rpm-build createrepo yum-utils gcc httpd 
+
+    # Скачивание исходного кода Nginx
+    cd /tmp
+    wget https://nginx.org/packages/centos/7/SRPMS/nginx-1.26.0-1.el7.ngx.src.rpm  
+    rpm -i nginx*
+    #устаналвиаем зависимости
+    yum-builddep /root/rpmbuild/SPECS/nginx.spec -y
+    #собираем rpm
+    rpmbuild --bb /root/rpmbuild/SPECS/nginx.spec
+    
+    # Создание каталога для репозитория
+    mkdir -p /var/www/html/repo
+    cp /root/rpmbuild/RPMS/x86_64/* /var/www/html/repo/
+    createrepo /var/www/html/repo/
+
+    # стартуем Apache для  репозитория
+    systemctl start httpd
+    systemctl enable httpd
+
+
+    echo "Репозиторий доступен по адресу: http://10.11.12.100/repo/"
+  SHELL
+end

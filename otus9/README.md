@@ -23,6 +23,7 @@ A) Попадаем в консоль с рут правами через Advanc
 Для этого выбираем пункт Ubuntu, нажимаем "e", в параметрах загрузки в конце строки Linux удаляем ro quiet splash и пишем rw init=/bin/bash, жмем f10, загружаемся в консоль, создаем пользователя otus,
 продолжаем загрузку через exec /sbin/init, смотрим, что в /etc/passwd появился новый пользователь
 
-![image](https://github.com/user-attachments/assets/8f5fedf7-4c57-4958-8b86-f48ea2489c1c)
+![image](https://github.com/user-attachments/assets/dbfdc5ca-f4e1-4906-8b0f-cc6d44c82c0d)
+
 
 

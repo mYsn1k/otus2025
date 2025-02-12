@@ -25,5 +25,13 @@ A) Попадаем в консоль с рут правами через Advanc
 
 ![image](https://github.com/user-attachments/assets/dbfdc5ca-f4e1-4906-8b0f-cc6d44c82c0d)
 
+3. Установить систему с LVM, после чего переименовать VG
+
+Запускаем скрипт vg_rename.sh, который в файле /boot/grub/grub.cfg меняет ubuntu--vg на ubuntu--otus, делаем vgrename, перезагружаемся, 
+првоеряем, что удалось загрузится и имя vg у нас ubuntu-otus
+
+![image](https://github.com/user-attachments/assets/287cfca1-b17e-4fda-9e21-42c76972cefa)
+
+
 
 

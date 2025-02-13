@@ -1,0 +1,35 @@
+Vagrant.configure("2") do |config|
+  # Настройка сервера NFS
+  config.vm.define "systemctl" do |server|
+    server.vm.box = "ubuntu/focal64"  # Используем Ubuntu 20.04 LTS
+    server.vm.hostname = "systemctl"  # Имя сервера
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 8192   # 8 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+     server.vm.provision "monitor service", type: "shell", path: "monitor.sh"
+     server.vm.provision "monitor check", type: "shell", inline: <<-SHELL
+     #ждем старт проверки
+     sleep 30
+     #проверяем лог
+     tail -n 1000 /var/log/syslog  | grep word
+SHELL
+
+     #ставитм сервис fcgi
+     server.vm.provision "fcgi service", type: "shell", path: "fcgi.sh"
+     server.vm.provision "fcgi check", type: "shell", inline: "systemctl status spawn-fcgi"
+  
+     #запускаем 2 nginx
+     server.vm.provision "nginx service", type: "shell", path: "nginx.sh"
+     server.vm.provision "nginx check", type: "shell", inline: <<-SHELL 
+     systemctl start nginx@first
+     systemctl start nginx@second
+     systemctl status nginx@first
+     systemctl status nginx@second
+     ps afx | grep nginx
+SHELL
+end
+
+end

@@ -1,0 +1,18 @@
+Vagrant.configure("2") do |config|
+  config.vm.define "proc" do |server|
+    server.vm.box = "ubuntu/focal64"  # Используем Ubuntu 20.04 LTS
+    server.vm.hostname = "bash"  # Имя сервера
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 8192   # 8 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+     #Запускаем парсинг /proc
+     server.vm.provision "proc pasring", type: "shell", path: "proc2.sh"
+
+
+
+end
+
+end

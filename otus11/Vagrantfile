@@ -1,0 +1,43 @@
+Vagrant.configure("2") do |config|
+  # Настройка сервера NFS
+  config.vm.define "bash" do |server|
+    server.vm.box = "ubuntu/focal64"  # Используем Ubuntu 20.04 LTS
+    server.vm.hostname = "bash"  # Имя сервера
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 8192   # 8 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+  #   server.vm.provision "update and install", type: "shell", inline: <<-SHELL
+     #обновляем список пакетов
+  #   apt-get update -y
+     #устанавливаем почтовый клиент
+  #   apt-get install -y mailutils
+#SHELL
+
+     server.vm.provision "copy log", type: "shell", inline: <<-SHELL
+     #создаем папку для псевдолога Nginx и копируем туда наш файл
+     mkdir -p /var/log/nginx
+     cp /vagrant/logs/nginx.log /var/log/nginx/access.log
+SHELL
+
+     #создаем скрипт мониторинга лога nginx
+     server.vm.provision "nginx log mail", type: "shell", path: "nginx_log_check.sh"
+
+     #добавляем в cron
+     server.vm.provision "cron", type: "shell", inline: <<-SHELL
+     cp /vagrant/nginx_log_check.sh  /etc/cron.hourly/nginx_log_check.sh
+     chmod +x /etc/cron.hourly/nginx_log_check.sh
+     echo "0 * * * * /etc/cron.hourly/nginx_log_check.sh" | crontab -
+SHELL
+     #не удалось настроить отправку почты, пр иустановке требуется интерактивный режим
+     #для првоерки выведем содержимое файла с логами
+     server.vm.provision "log check", type: "shell", inline: <<-SHELL
+     cat /var/log/monitoring_nginx.log
+SHELL
+
+
+end
+
+end

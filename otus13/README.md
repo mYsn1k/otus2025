@@ -204,7 +204,6 @@ Dоспользуемся утилитой audit2why для анализа acces
 
 ```bash
 [root@client ~]# audit2why < /var/log/audit/audit.log
-[root@client ~]# 
 ```
 
 Тут мы видим, что на клиенте отсутствуют ошибки.
@@ -229,15 +228,14 @@ type=AVC msg=audit(1683032642.511:1908): avc:  denied  { create } for  pid=5154 
 ```
 
 В логах мы видим, что ошибка в контексте безопасности. Вместо типа named_t используется тип etc_t
-```
 
-Посомтрим, какой тип должн быть по умолчанию через semanage
+
+Посмотрим, какой тип должн быть по умолчанию через semanage
 
 ```bash
 [root@ns01 ~]# sudo semanage fcontext -l | grep named
 /etc/rndc.*              regular file       system_u:object_r:named_conf_t:s0 
 /var/named(/.*)?         all files          system_u:object_r:named_zone_t:s0 
-...
 ```
 
 Изменим тип для каталога /etc/named
@@ -261,7 +259,6 @@ drw-rwx---. root named unconfined_u:object_r:named_zone_t:s0 dynamic
 > update add www.ddns.lab. 60 A 192.168.56.15
 > send
 > quit 
-[vagrant@client ~]$ 
 [vagrant@client ~]$ dig @192.168.56.10 www.ddns.lab
 
 ; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.13 <<>> @192.168.56.10 www.ddns.lab

@@ -23,6 +23,8 @@ config.vm.provision "OS update", type: "shell", path: "os_update.sh"
     # Установка необходимых пакетов
           yum install -y epel-release
           yum install -y nginx
+          yum install -y policycoreutils-python
+
     # Меняем порт
           sed -ie 's/:80/:4881/g' /etc/nginx/nginx.conf
           sed -i 's/listen       80;/listen       4881;/' /etc/nginx/nginx.conf

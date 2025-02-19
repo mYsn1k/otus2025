@@ -1,0 +1,79 @@
+#Прописываем репозиторий для скачивания vagrant box centos 7
+ENV['VAGRANT_SERVER_URL'] = 'http://vagrant.elab.pro'
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"  # Используем Centos 7
+  config.vm.hostname = "prometeus"      # Имя виртуальной машины
+
+  # Настройки ресурсов
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 8192   # 8 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+  # Настройка сети 
+  config.vm.network "forwarded_port", guest: 9090, host: 9090
+  config.vm.network "forwarded_port", guest: 9100, host: 9100
+  config.vm.network "forwarded_port", guest: 9093, host: 9093 
+  config.vm.network "forwarded_port", guest: 3000, host: 3000
+
+#Обновление репозиториев 
+config.vm.provision "OS update", type: "shell", path: "os_update.sh"
+# Установим графану
+config.vm.provision "Grafana", type: "shell", inline: <<-SHELL
+          yum localinstall -y /vagrant/grafana.rpm
+          systemctl daemon-reload
+          systemctl enable grafana-server
+          systemctl start grafana-server
+          systemctl status grafana-server
+SHELL
+
+#установим прометеус
+config.vm.provision "Prometheus", type:"shell", inline: <<-SHELL
+          yum install -y wget
+          mkdir /tmp/prometheus
+          cd /tmp/prometheus
+          wget "https://github.com/prometheus/prometheus/releases/download/v2.53.3/prometheus-2.53.3.linux-amd64.tar.gz"
+          tar -xzf prometheus*.tar.gz
+          rm prometheus*.tar.gz
+          cd prometheus*/
+          groupadd --system prometheus
+          useradd -s /sbin/nologin --system -g prometheus prometheus
+          mv prometheus /usr/local/bin
+          mv promtool /usr/local/bin
+          chown prometheus:prometheus /usr/local/bin/prometheus
+          chown prometheus:prometheus /usr/local/bin/promtool
+          mkdir /etc/prometheus
+          mkdir /var/lib/prometheus
+          mv consoles /etc/prometheus
+          mv console_libraries /etc/prometheus
+          mv prometheus.yml /etc/prometheus 
+          chown prometheus:prometheus /etc/prometheus
+          chown -R prometheus:prometheus /etc/prometheus/consoles
+          chown -R prometheus:prometheus /etc/prometheus/console_libraries
+          chown -R prometheus:prometheus /var/lib/prometheus
+          cp /vagrant/prometheus.yml /etc/prometheus/prometheus.yml
+          chown prometheus:prometheus /etc/prometheus/prometheus.yml
+          cp /vagrant/prometheus.service /etc/systemd/system/prometheus.service
+          systemctl daemon-reload
+          systemctl enable prometheus
+          systemctl start prometheus
+          systemctl status prometheus 
+SHELL
+
+config.vm.provision "Node exporter", type:"shell", inline: <<-SHELL
+          setenforce 0
+          wget "https://github.com/prometheus/node_exporter/releases/download/v1.9.0/node_exporter-1.9.0.linux-amd64.tar.gz"
+          tar -xzf node_exporter*
+          cd node_exporter*
+          mv node_exporter /usr/local/bin/
+          useradd -rs /bin/false nodeusr
+          cp /vagrant/node_exporter.service /etc/systemd/system/node_exporter.service
+          sytemctl daemon-reload
+          systemctl enable node_exporter          
+          systemctl start node_exporter
+          systemctl status node_exporter
+SHELL
+end
+
+ 

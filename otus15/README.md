@@ -9,5 +9,6 @@
 
 ![Screenshot from 2025-02-19 22-10-13](https://github.com/user-attachments/assets/0966d165-4597-41a7-9eaf-4b574f7d2d58)
 
-3. Скачаем дашборд Node exporter и применим к нашему дашборду https://grafana.com/grafana/dashboards/1860-node-exporter-full/
-4. 
+3. Скачаем дашборд Node exporter Full и применим к нашему дашборду https://grafana.com/grafana/dashboards/1860-node-exporter-full/
+
+![Screenshot from 2025-02-19 22-38-16](https://github.com/user-attachments/assets/e4237776-5a04-49a6-b70a-c1c8fb93fd3e)

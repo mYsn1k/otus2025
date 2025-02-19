@@ -16,8 +16,10 @@ root@vagrant:/docker# docker run -dt -p 80:80 otus:nginx
 bd47ad0a61d115a67939ef145c6e4c2c5bf7f4bf04d16bdaccea877da16838c5
 ```
 ![image](https://github.com/user-attachments/assets/d3e78c65-c7ff-47b3-a497-ab148e656f62)
-6. Собираем образ 
-``bash
+
+6. Собираем образ
+   
+```bash
 root@vagrant:/docker# docker build -t otus:nginx .
 DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
             Install the buildx component to build images with BuildKit:

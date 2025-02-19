@@ -16,6 +16,28 @@ root@vagrant:/docker# docker run -dt -p 80:80 otus:nginx
 bd47ad0a61d115a67939ef145c6e4c2c5bf7f4bf04d16bdaccea877da16838c5
 ```
 ![image](https://github.com/user-attachments/assets/d3e78c65-c7ff-47b3-a497-ab148e656f62)
+6. Собираем образ 
+``bash
+root@vagrant:/docker# docker build -t otus:nginx .
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  3.072kB
+Step 1/4 : FROM nginx:alpine
+ ---> 1ff4bb4faebc
+Step 2/4 : COPY ./index.html /usr/share/nginx/html/index.html
+ ---> Using cache
+ ---> 955d3d6fb49e
+Step 3/4 : EXPOSE 80
+ ---> Using cache
+ ---> ebefc7e3f3d0
+Step 4/4 : CMD ["nginx", "-g", "daemon off;"]
+ ---> Using cache
+ ---> 0a817d9aaf51
+Successfully built 0a817d9aaf51
+Successfully tagged otus:nginx
+```
 
 6.  Логинимся в репозиторий
 ```bash

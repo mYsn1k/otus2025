@@ -1,0 +1,38 @@
+Vagrant.configure("2") do |config|
+  # Настройка сервера NFS
+  config.vm.define "pam" do |server|
+    server.vm.box = "ubuntu/focal64"  # Используем Ubuntu 20.04 LTS
+    server.vm.hostname = "pam"
+    server.vm.network "public_network", ip: "10.11.12.100"
+  
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 4096   # 4 ГБ оперативной памяти
+    vb.cpus = 4        # 4 ядра CPU
+  end
+
+    server.vm.provision "shell", preserve_order: true, inline: <<-SHELL
+          #Разрешаем подключение пользователей по SSH с использованием пароля
+          sed -i 's/^PasswordAuthentication.*$/PasswordAuthentication yes/' /etc/ssh/sshd_config
+          #Перезапуск службы SSHD
+          systemctl restart sshd.service
+          #Создаем 2-ух пользователей
+          useradd otusadm && useradd otus
+          #Создаем пароли
+          echo "otusadm:Otus2022!"| chpasswd && echo "otus:Otus2022!"| chpasswd
+          #Создаем группу admin
+          groupadd -f admin
+          #Добавляем otusadmin, vagrant и рута в группу админ
+          usermod otusadm -a -G admin && usermod root -a -G admin && usermod vagrant -a -G admin
+          #Спим для проверки возможности логина по паролю через ssh
+          sleep 500
+          #Создаем скрипт првоерки принадлежности к группе и запрета входа в выходыне
+          cp /vagrant/login.sh /usr/local/bin/login.sh
+          chmod +x /usr/local/bin/login.sh
+          #Создаем контроль доступа для sshd
+          cp /vagrant/sshd /etc/pam.d/sshd 
+          SHELL
+end
+
+
+
+end
